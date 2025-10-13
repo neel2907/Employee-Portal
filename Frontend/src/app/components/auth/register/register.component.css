@@ -1,0 +1,104 @@
+/* register.component.css */
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+
+.register-container {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+h2 {
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  border: 1.8px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  outline: none;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: #3f51b5;
+  box-shadow: 0 0 5px rgba(63, 81, 181, 0.3);
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin-top: -14px;
+  margin-bottom: 12px;
+}
+
+button[type="submit"] {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #303f9f;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 10px;
+  color: #555;
+  font-style: italic;
+}
+
+.success-message {
+  color: #388e3c;
+  font-weight: 600;
+  margin-top: 12px;
+  text-align: center;
+}
+
+@media (max-width: 450px) {
+  .register-container {
+    padding: 25px 20px;
+    width: 90%;
+  }
+}
