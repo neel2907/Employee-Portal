@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AuthResponse, JwtPayload, LoginRequest, RegisterRequest, User } from '../models/user.model'
-import { HttpClient } from '@angular/common/http';
-import { HttpClientModule } from '@angular/common/http';
+import { User, LoginRequest, RegisterRequest, AuthResponse, JwtPayload } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,16 +13,14 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
   private sessionTimeout: any;
   private readonly SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes
-  private readonly API_URL = 'http://localhost:8090/api'; // Backend base URL, update as needed
+  private readonly API_URL = 'http://localhost:8090/api'; // Update to match your backend
 
   constructor(
     private http: HttpClient,
     private router: Router
-  ) {
-    this.loadUserFromStorage();
-    this.startSessionTimer();
-  }
+  ) {}
 
+  // 🔐 Login
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, credentials)
       .pipe(
@@ -34,26 +31,36 @@ export class AuthService {
       );
   }
 
+  // 📝 Registration
   register(userData: RegisterRequest): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/auth/register`, userData);
   }
 
+  // 🚪 Logout
   logout(): void {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('token');
+    }
     this.currentUserSubject.next(null);
     this.clearSessionTimer();
     this.router.navigate(['/login']);
   }
 
+  // 👤 Get Current User
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
+  // 🔑 Get JWT Token
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
+  // ✅ Check Authentication
   isAuthenticated(): boolean {
     const token = this.getToken();
     if (!token) return false;
@@ -67,31 +74,36 @@ export class AuthService {
     }
   }
 
-  // Password Reset Initiate
-  initiatePasswordReset(email: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.API_URL}/auth/forgot-password`, { email });
+  // 🔄 Load User from Storage (call from AppComponent ngOnInit)
+  public loadUserFromStorage(): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const userStr = localStorage.getItem('currentUser');
+      const token = localStorage.getItem('token');
+
+      if (userStr && token && this.isAuthenticated()) {
+        const user = JSON.parse(userStr);
+        this.currentUserSubject.next(user);
+      } else {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('token');
+      }
+    } else {
+      console.warn('localStorage is not available in this environment.');
+    }
   }
 
-  // Verify OTP and Reset Password
-  verifyOTPAndResetPassword(email: string, otp: string, newPassword: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.API_URL}/auth/reset-password`, {
-      email,
-      otp,
-      newPassword
-    });
+  // 🔐 Decode JWT Token
+  private decodeToken(token: string): JwtPayload {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+
+    return JSON.parse(jsonPayload);
   }
 
-  // Profile Update
-  updateProfile(userId: string, profileData: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.API_URL}/admin/users/${userId}`, profileData)
-      .pipe(
-        tap(updatedUser => {
-          this.setCurrentUser(updatedUser, this.getToken() || '');
-        })
-      );
-  }
-
-  // Session Management
+  // 🕒 Session Management
   resetSessionTimer(): void {
     if (this.isAuthenticated()) {
       this.startSessionTimer();
@@ -113,32 +125,33 @@ export class AuthService {
   }
 
   private setCurrentUser(user: User, token: string): void {
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    localStorage.setItem('token', token);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('token', token);
+    }
     this.currentUserSubject.next(user);
   }
 
-  private loadUserFromStorage(): void {
-    const userStr = localStorage.getItem('currentUser');
-    const token = localStorage.getItem('token');
-
-    if (userStr && token && this.isAuthenticated()) {
-      const user = JSON.parse(userStr);
-      this.currentUserSubject.next(user);
-    } else {
-      // Clear invalid data
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('token');
-    }
+  // 🔧 Profile Update
+  updateProfile(userId: string, profileData: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.API_URL}/admin/users/${userId}`, profileData)
+      .pipe(
+        tap(updatedUser => {
+          this.setCurrentUser(updatedUser, this.getToken() || '');
+        })
+      );
   }
 
-  private decodeToken(token: string): JwtPayload {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+  // 🔐 Password Reset
+  initiatePasswordReset(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/auth/forgot-password`, { email });
+  }
 
-    return JSON.parse(jsonPayload);
+  verifyOTPAndResetPassword(email: string, otp: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/auth/reset-password`, {
+      email,
+      otp,
+      newPassword
+    });
   }
 }
