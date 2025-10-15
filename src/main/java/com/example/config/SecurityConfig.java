@@ -20,7 +20,8 @@ import com.example.filters.JwtFilter;
 import java.util.List;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
+
 public class SecurityConfig {
 
   @Bean
@@ -42,7 +43,7 @@ public class SecurityConfig {
       .cors(cors -> cors.configurationSource(corsConfigurationSource))
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // preflight
-        .requestMatchers("/api/auth/**").permitAll()
+        .requestMatchers("/api/auth/register").permitAll()
         .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
 
         // Role-based access control

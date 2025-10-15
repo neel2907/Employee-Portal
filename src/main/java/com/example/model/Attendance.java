@@ -1,12 +1,13 @@
 package com.example.model;
 
 import jakarta.persistence.*;
-import java.time.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "ATTENDANCE")
-
-
 public class Attendance {
 
     @Id
@@ -14,13 +15,24 @@ public class Attendance {
     @SequenceGenerator(name = "attendance_seq", sequenceName = "ATTENDANCE_SEQ", allocationSize = 1)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private LocalDate attendance_date;
+    @Column(name = "attendance_date", nullable = false)
+    private LocalDate date;
+
+    @Column(name = "check_in_time")
     private LocalTime checkInTime;
+
+    @Column(name = "check_out_time")
     private LocalTime checkOutTime;
+
+    @Column(name = "check_in_timestamp")
+    private LocalDateTime checkInTimestamp;
+
+    @Column(name = "check_out_timestamp")
+    private LocalDateTime checkOutTimestamp;
 
     @Column(name = "total_hours")
     private Double totalHours;
@@ -31,13 +43,15 @@ public class Attendance {
 	}
 
 	public Attendance(Long id, User user, LocalDate date, LocalTime checkInTime, LocalTime checkOutTime,
-			Double totalHours) {
+			LocalDateTime checkInTimestamp, LocalDateTime checkOutTimestamp, Double totalHours) {
 		super();
 		this.id = id;
 		this.user = user;
-		this.attendance_date = attendance_date;
+		this.date = date;
 		this.checkInTime = checkInTime;
 		this.checkOutTime = checkOutTime;
+		this.checkInTimestamp = checkInTimestamp;
+		this.checkOutTimestamp = checkOutTimestamp;
 		this.totalHours = totalHours;
 	}
 
@@ -57,12 +71,12 @@ public class Attendance {
 		this.user = user;
 	}
 
-	public LocalDate getAttendance_date() {
-		return attendance_date;
+	public LocalDate getDate() {
+		return date;
 	}
 
-	public void setAttendance_date(LocalDate attendance_date) {
-		this.attendance_date = attendance_date;
+	public void setDate(LocalDate date) {
+		this.date = date;
 	}
 
 	public LocalTime getCheckInTime() {
@@ -81,6 +95,22 @@ public class Attendance {
 		this.checkOutTime = checkOutTime;
 	}
 
+	public LocalDateTime getCheckInTimestamp() {
+		return checkInTimestamp;
+	}
+
+	public void setCheckInTimestamp(LocalDateTime checkInTimestamp) {
+		this.checkInTimestamp = checkInTimestamp;
+	}
+
+	public LocalDateTime getCheckOutTimestamp() {
+		return checkOutTimestamp;
+	}
+
+	public void setCheckOutTimestamp(LocalDateTime checkOutTimestamp) {
+		this.checkOutTimestamp = checkOutTimestamp;
+	}
+
 	public Double getTotalHours() {
 		return totalHours;
 	}
@@ -88,6 +118,7 @@ public class Attendance {
 	public void setTotalHours(Double totalHours) {
 		this.totalHours = totalHours;
 	}
+    
     
     
 }
