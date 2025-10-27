@@ -23,7 +23,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = com.example.demo.EmployeePortalBackendApplication.class)
 public class AttendanceServiceImplTest {
 
     @Mock
