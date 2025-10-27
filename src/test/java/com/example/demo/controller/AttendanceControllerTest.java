@@ -1,5 +1,6 @@
-package com.example.controller;
+package com.example.demo.controller;
 
+import com.example.controller.AttendanceController;
 import com.example.dto.AttendanceResponse;
 import com.example.dto.CheckInRequest;
 import com.example.dto.CheckOutRequest;

@@ -1,6 +1,8 @@
-package com.example.repository;
+package com.example.demo.repository;
 
 import com.example.model.User;
+import com.example.repository.UserRepository;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

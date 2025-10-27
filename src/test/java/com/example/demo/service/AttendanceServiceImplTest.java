@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.demo.service;
 
 import com.example.dto.CheckInRequest;
 import com.example.dto.CheckOutRequest;

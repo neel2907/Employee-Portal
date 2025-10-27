@@ -1,16 +1,20 @@
-package com.example.repository;
+package com.example.demo.repository;
 
+import com.example.demo.EmployeePortalBackendApplication;
 import com.example.model.Attendance;
 import com.example.model.User;
+import com.example.repository.AttendanceRepository;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@SpringBootTest(classes = EmployeePortalBackendApplication.class)
 public class AttendanceRepositoryTest {
 
     @Autowired
